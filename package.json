@@ -1,0 +1,22 @@
+{
+  "name": "tenoftenproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^1.0.2",
+    "body-parser": "^1.17.0",
+    "express": "^4.15.0",
+    "express-jwt": "^5.1.0",
+    "express-validation": "^1.0.1",
+    "http-status": "^1.0.1",
+    "joi": "^10.2.2",
+    "mongoose": "^4.8.6",
+    "nodemon": "^1.11.0"
+  }
+}
