@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const httpStatus = require('http-status');
 const APIError = require('../helpers/APIError');
-const bcrypt = require('bcrypt');
-
+const utils = require('../helpers/utils');
+var uniqueValidator = require('mongoose-unique-validator');
 /**
  * User Schema
  */
@@ -37,7 +37,7 @@ const AccountSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        required: true
+        required: false
     },
     created_at: {
         type: Date,
@@ -57,8 +57,13 @@ AccountSchema.pre('save', function (next) {
     var me = this,
         error;
     if (me.isModified('password')) {
-        me.password = me.generateHash(me.password);
+        utils.saltAndHash(this.password, function(err, password){
+            if(err) return next(err);
+            me.password = password;
+            next();
+        });
     }
+    else
     next();
 });
 
@@ -68,10 +73,6 @@ AccountSchema.pre('save', function (next) {
 AccountSchema.method({
     validatePassword(password) {
         return bcrypt.compare(password, this.password);
-    },
-
-    generateHash(password) {
-        return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
     }
 });
 
@@ -124,7 +125,7 @@ AccountSchema.statics = {
 
 
 };
-
+AccountSchema.plugin(uniqueValidator);
 /**
  * @typedef User
  */

@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^1.0.2",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.17.0",
     "express": "^4.15.0",
     "express-jwt": "^5.1.0",
@@ -17,6 +18,8 @@
     "http-status": "^1.0.1",
     "joi": "^10.2.2",
     "mongoose": "^4.8.6",
-    "nodemon": "^1.11.0"
+    "mongoose-unique-validator": "^1.0.4",
+    "nodemon": "^1.11.0",
+    "uuid-v4": "^0.1.0"
   }
 }

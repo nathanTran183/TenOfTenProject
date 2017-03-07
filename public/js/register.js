@@ -1,7 +1,9 @@
 var app = new Vue({
     el: '#app',
     data: {
+        // email: "", username: "", password: "",
         messages: {
+            // error: "",
             phoneStatus: "Your phone number isn't verified yet",
             phoneButton: "Verify your phone number"
         },
@@ -9,44 +11,67 @@ var app = new Vue({
         phone_token: ""
     },
     methods: {
-        verifyPhone: function() {
-            AccountKit.login("PHONE", {countryCode: "+65", phoneNumber: "91234567"},
-            this.accountKitCallback);
+        verifyPhone: function () {
+            var num1 = 1634067196;
+            AccountKit.login("PHONE", {countryCode: "+84", phoneNumber: 1675699793},
+                this.accountKitCallback);
             this.messages.phoneButton = "Verifying...";
         },
-        accountKitCallback: function(response) {
+        accountKitCallback: function (response) {
             var vm = this;
-            if (response.status === "PARTIALLY_AUTHENTICATED"  ) {
+            if (response.status === "PARTIALLY_AUTHENTICATED") {
                 code = response.code;
                 csrf = response.state;
+                console.log('code here: ' + code);
+                console.log('csrf: ' + csrf);
 
-                axios.post('/Replace/With/Actual/Endpoint', {
+                axios.post('http://localhost:3000/api/auth/phoneNumber', {
                     code: code,
-                    csrf_token : csrf
+                    csrf_token: csrf
                 })
-                .then(function (response) {
-                    vm.phoneVerified = true;
-                    vm.messages.phoneStatus = "";
-                    vm.messages.phoneButton = "Your number is verified";
-                    vm.phone_token = response.data.phone_token;
-                })
-                .catch(function (error) {
-                    console.log(error.response);
-                    vm.messages.phoneButton = "Verify your phone number";
-                    try {
-                        error.response.data.err === 100;
-                        vm.messages.phoneStatus = "This phone number has been used before";
-                    } catch(err) {
-                        vm.messages.phoneStatus = "Please try again";
-                    }
-                });
+                    .then(function (response) {
+                        vm.phoneVerified = true;
+                        vm.messages.phoneStatus = "";
+                        vm.messages.phoneButton = "Your number is verified";
+                        vm.phone_token = response.data.phone_token;
+                        console.log(vm.phone_token);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        vm.messages.phoneButton = "Verify your phone number";
+                        try {
+                            error.response.data.err === 100;
+                            vm.messages.phoneStatus = "This phone number has been used before";
+                        } catch (err) {
+                            vm.messages.phoneStatus = "Please try again";
+                        }
+                    });
 
             } else {
                 if (!this.phoneVerified) {
                     this.messages.phoneButton = "Verify your phone number";
                 }
             }
-        }
+        },
+        // doRegister: function () {
+        //     if (this.email == "" || this.username == "" || this.password == "") {
+        //         this.messages.error = "Please insert all fields";
+        //     } else {
+        //         axios.post("http://localhost:3000/api/auth/register", {
+        //             username: this.username,
+        //             email: this.email,
+        //             password: this.password,
+        //             phone_token: this.phone_token
+        //         })
+        //             .then(function (result) {
+        //                 this.$route.router.go('/');
+        //             })
+        //             .catch(function (error) {
+        //                 console.log(error);
+        //                 this.messages.error = error;
+        //             });
+        //     }
+        // }
     }
 });
 
