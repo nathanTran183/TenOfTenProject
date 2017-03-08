@@ -14,11 +14,12 @@ router.route('/login')
 router.route('/register')
     .post(validate(paramValidation.register), authCtrl.register);
 
-/** POST /api/auth/addAccount - Returns userdata and token if valid information is provided and valid token */
-router.route('/addAccount')
-    .post(validate(paramValidation.register),expressJwt({ secret: config.jwtSecret }), authCtrl.register);
-//decode phone number
+/** POST /api/auth/phoneNumber - Returns a phone token if valid phone facebookAccKit is provided */
 router.route('/phoneNumber')
     .post(authCtrl.execMobile);
+
+/** GET /api/auth/profile - Returns user's profile if user logged in - This link is protected route*/
+router.route('/profile')
+    .get(expressJwt({ secret: config.jwtSecret }), authCtrl.viewProfile);
 
 module.exports = router;

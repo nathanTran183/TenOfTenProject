@@ -15,7 +15,7 @@ module.exports = {
     body: {
       username: Joi.string().token().min(5).required(),
       email: Joi.string().email(),
-      password: Joi.string().min(6).required(),
+      password: Joi.string().min(6).required()
     }
   },
 };

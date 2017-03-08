@@ -7,24 +7,25 @@ var uniqueValidator = require('mongoose-unique-validator');
  * User Schema
  */
 const AccountSchema = new mongoose.Schema({
-    id: {
+    _id: {
         type: String,
+        index: {unique: true},
         required: true,
-        unique: true,
+        default: utils.getUUID
     },
     username: {
         type: String,
-        required: true,
-        unique: true
+        required: [true,'username is required'],
+        unique: [true,'username cannot be duplicated']
     },
     email: {
         type: String,
-        required: true,
-        unique: true
+        required: [true,'email is required'],
+        unique: [true,'email cannot be duplicated']
     },
     password: {
         type: String,
-        required: true
+        required: [true,'password is required'],
     },
     e_verified: {
         type: Boolean,
@@ -32,8 +33,8 @@ const AccountSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        unique: true,
-        required: true
+        unique: [true,'phone number cannot be duplicated'],
+        required: [true,'phone number is required'],
     },
     role: {
         type: String,
@@ -41,7 +42,7 @@ const AccountSchema = new mongoose.Schema({
     },
     created_at: {
         type: Date,
-        required: true,
+        required: [true,'created date is required'],
         default: Date.now
     },
 
@@ -93,6 +94,7 @@ AccountSchema.statics = {
                     return account;
                 }
                 const err = new APIError('No such user exists!', httpStatus.NOT_FOUND);
+                console.log(err);
                 return Promise.reject(err);
             });
     },
@@ -122,8 +124,6 @@ AccountSchema.statics = {
             .limit(limit)
             .exec();
     },
-
-
 };
 AccountSchema.plugin(uniqueValidator);
 /**

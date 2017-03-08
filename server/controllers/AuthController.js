@@ -5,6 +5,7 @@ const config = require('../../config/env');
 const Account = require('../models/Account.js');
 const fbAccKit = require('../helpers/fbacckit');
 const utils = require('../helpers/utils');
+
 /**
  * Returns jwt token if valid username and password is provided
  * @param req
@@ -13,45 +14,72 @@ const utils = require('../helpers/utils');
  * @returns {*}
  */
 function login(req, res, next) {
-    // Ideally you'll fetch this from the db
+
     Account.getByUsername(req.body.username)
         .then((account) => {
-            if (account.validatePassword(req.body.password)) {
-                const token = jwt.sign({user: account}, config.jwtSecret);
-                return res.json({
-                    token: token,
-                    user: account
-                });
-            } else {
-                const err = new APIError('Password is not correct!', httpStatus.UNAUTHORIZED, true);
-                return next(err);
-            }
+            utils.checkPassword(req.body.password, account.password, function (err, result) {
+                if (err) return res.json(err);
+                if (result == true) {
+                    const token = jwt.sign({
+                        userId: account._id,
+                        role: account.role,
+                        expiresIn: config.expireTime
+                    }, config.jwtSecret);
+                    console.log('here');
+                    console.log('----------------');
+                    console.log(token);
+                    return res.json({
+                        profile: {
+                            id: account._id,
+                            username: account.username,
+                            email: account.email,
+                            e_verified: account.e_verified,
+                            phone: account.phone,
+                            role: account.role
+                        },
+                        id_token: token
+                    });
+                } else {
+                    const err = new APIError('Password is not correct!', httpStatus.UNAUTHORIZED, true);
+                    return next(err);
+                }
+            })
         })
         .catch(e => next(e));
 }
 
 function register(req, res, next) {
     //decode phone_token
-    var phone = jwt.verify(req.body.phone_token, config.jwtSecret);
-    var newAccount = new Account(req.body);
-    newAccount.id = utils.getUUID();
-    newAccount.phone = phone.result.phone;
-
-    newAccount.save()
-        .then(savedAccount => {
-            const token = jwt.sign({user: savedAccount}, config.jwtSecret);
-            return res.json({
-                token: token,
-                user: savedAccount
+    jwt.verify(req.body.phone_token, config.jwtSecret, function (err, phoneDecoded) {
+        if (err) return res.json(err);
+        var phone = phoneDecoded;
+        // handle saving account
+        var newAccount = new Account(req.body);
+        newAccount.phone = phone.result.phone;
+        newAccount.save()
+            .then(savedAccount => {
+                const token = jwt.sign({
+                    userId: savedAccount._id,
+                    role: savedAccount.role,
+                    expiresIn: config.expireTime
+                }, config.jwtSecret);
+                return res.json({
+                    profile: {
+                        id: savedAccount._id,
+                        username: savedAccount.username,
+                        email: savedAccount.email,
+                        e_verified: savedAccount.e_verified,
+                        phone: savedAccount.phone,
+                        role: savedAccount.role
+                    },
+                    id_token: token
+                })
+            }, error => {
+                console.log();
+                return res.json(error);
             })
-        }, error => {
-            console.log();
-            return next(error);
-        })
-        .catch(e => {
-            res.json(e);
-        });
-
+            .catch(e => res.json(e));
+    });
 }
 
 function execMobile(req, res, next) {
@@ -67,8 +95,30 @@ function execMobile(req, res, next) {
     });
 }
 
+function viewProfile(req, res, next) {
+    var user = req.user;
+    Account.getById(user.userId)
+        .then((account) => {
+            return res.json({
+                profile: {
+                    id: account._id,
+                    username: account.username,
+                    email: account.email,
+                    e_verified: account.e_verified,
+                    phone: account.phone,
+                    role: account.role
+                }
+            })
+        }, error => {
+            console.log();
+            return res.json(error);
+        })
+        .catch(e => res.json(e));
+}
+
 module.exports = {
     login: login,
     register: register,
-    execMobile: execMobile
+    execMobile: execMobile,
+    viewProfile: viewProfile
 };
