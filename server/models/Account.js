@@ -106,8 +106,9 @@ AccountSchema.statics = {
                 if (account) {
                     return account;
                 }
-                const err = new APIError('No such user exists with this username!', httpStatus.NOT_FOUND, true);
-                return Promise.reject(err);
+
+                const err = new APIError('No such user exists with this username!', httpStatus.NOT_FOUND);
+                return Promise.reject(err.message);
             });
     },
 

@@ -5,7 +5,7 @@ module.exports = {
   // POST /api/auth/login
   login: {
     body: {
-      username: Joi.string().token().required(),
+      username: Joi.string().token().min(5).required(),
       password: Joi.string().min(6).required()
     }
   },

@@ -14,7 +14,6 @@ const utils = require('../helpers/utils');
  * @returns {*}
  */
 function login(req, res, next) {
-
     Account.getByUsername(req.body.username)
         .then((account) => {
             utils.checkPassword(req.body.password, account.password, function (err, result) {
@@ -25,9 +24,6 @@ function login(req, res, next) {
                         role: account.role,
                         expiresIn: config.expireTime
                     }, config.jwtSecret);
-                    console.log('here');
-                    console.log('----------------');
-                    console.log(token);
                     return res.json({
                         profile: {
                             id: account._id,
@@ -40,12 +36,16 @@ function login(req, res, next) {
                         id_token: token
                     });
                 } else {
-                    const err = new APIError('Password is not correct!', httpStatus.UNAUTHORIZED, true);
-                    return next(err);
+                    var err = new APIError('Password is not correct!', httpStatus.UNAUTHORIZED, true);
+                    return next(err.message);
                 }
             })
+        },error =>{
+            return next(error);
         })
-        .catch(e => next(e));
+        .catch(e => {
+            return res.json(e);
+        } );
 }
 
 function register(req, res, next) {
@@ -75,10 +75,17 @@ function register(req, res, next) {
                     id_token: token
                 })
             }, error => {
-                console.log();
-                return res.json(error);
+                utils.getStringErrors(error.errors, function (err, message) {
+                    if (err) {
+                        return res.json(err);
+                    }
+                    var errMessage = new APIError(message, httpStatus.CONFLICT, true);
+                    return res.json(errMessage.message);
+                });
             })
-            .catch(e => res.json(e));
+            .catch(e => {
+                return res.json(e)
+            });
     });
 }
 
@@ -88,7 +95,6 @@ function execMobile(req, res, next) {
             return err;
         }
         const phoneToken = jwt.sign({result}, config.jwtSecret);
-        console.log(phoneToken);
         return res.json({
             phone_token: phoneToken
         });
@@ -110,7 +116,6 @@ function viewProfile(req, res, next) {
                 }
             })
         }, error => {
-            console.log();
             return res.json(error);
         })
         .catch(e => res.json(e));

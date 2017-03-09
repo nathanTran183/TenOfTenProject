@@ -8,7 +8,7 @@ mongoose.connection.on('error', function() {
 });
 
 app.listen(config.port, function(){
-    console.log('Magic is happening on port 3000')
+    console.log('Server start on port 3000')
 });
 
 
