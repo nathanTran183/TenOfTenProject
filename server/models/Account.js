@@ -126,7 +126,7 @@ AccountSchema.statics = {
             .exec();
     },
 };
-AccountSchema.plugin(uniqueValidator);
+AccountSchema.plugin(uniqueValidator,  { message: 'Error: expected {PATH} cannot be duplicated.' });
 /**
  * @typedef User
  */

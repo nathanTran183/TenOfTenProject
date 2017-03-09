@@ -59,9 +59,16 @@ function getStringErrors(errors, done) {
         });
 }
 
+function isAdmin(req, res, next){
+    if(req.user.role!= 'admin') {
+        return res.json("This account don't have permission to access this route");
+    } else return next();
+}
+
 module.exports = {
     getUUID: getUUID,
     saltAndHash: saltAndHash,
     checkPassword: checkPassword,
-    getStringErrors: getStringErrors
+    getStringErrors: getStringErrors,
+    isAdmin: isAdmin
 };
