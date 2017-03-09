@@ -17,6 +17,7 @@
     "express-validation": "^1.0.1",
     "http-status": "^1.0.1",
     "joi": "^10.2.2",
+    "jsonwebtoken": "^7.3.0",
     "mongoose": "^4.8.6",
     "mongoose-unique-validator": "^1.0.4",
     "nodemon": "^1.11.0",
