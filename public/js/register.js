@@ -53,25 +53,6 @@ var app = new Vue({
                 }
             }
         },
-        // doRegister: function () {
-        //     if (this.email == "" || this.username == "" || this.password == "") {
-        //         this.messages.error = "Please insert all fields";
-        //     } else {
-        //         axios.post("http://localhost:3000/api/auth/register", {
-        //             username: this.username,
-        //             email: this.email,
-        //             password: this.password,
-        //             phone_token: this.phone_token
-        //         })
-        //             .then(function (result) {
-        //                 this.$route.router.go('/');
-        //             })
-        //             .catch(function (error) {
-        //                 console.log(error);
-        //                 this.messages.error = error;
-        //             });
-        //     }
-        // }
     }
 });
 

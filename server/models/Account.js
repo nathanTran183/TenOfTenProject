@@ -94,7 +94,6 @@ AccountSchema.statics = {
                     return account;
                 }
                 const err = new APIError('No such user exists!', httpStatus.NOT_FOUND);
-                console.log(err);
                 return Promise.reject(err);
             });
     },

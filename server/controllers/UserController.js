@@ -15,7 +15,6 @@ function listAllAccounts(req, res, next){
     // });
 
     //Option 2: use dummy list
-
     var accountList = [
         {
             "_id": "AAAAAAAAAAAAAAAAAAAAAA",
